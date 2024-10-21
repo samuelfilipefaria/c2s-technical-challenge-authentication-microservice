@@ -11,4 +11,5 @@ Rails.application.routes.draw do
   post "/users/login", to: "users#login"
   post "/users/get_data", to: "users#get_data"
   post "/users/destroy", to: "users#destroy"
+  post "/users/edit", to: "users#update"
 end

@@ -20,7 +20,7 @@ class JsonWebToken
 
   def self.decode_user_data(token)
     begin
-      user_data = JWT.decode token, SECRET, true, { algorithm: "HS256" }
+      user_data = JWT.decode token, SECRET
       return user_data
     rescue => e
       puts e

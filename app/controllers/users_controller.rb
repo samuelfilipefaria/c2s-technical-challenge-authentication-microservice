@@ -21,11 +21,14 @@ class UsersController < ActionController::API
     end
   end
 
-  def show
-    user = User.find(params[:id])
+  def get_data
+    user_data = JsonWebToken.decode_user_data(params[:token])
+    user_id = user_data[0]["user_data"]
+
+    user = User.find(user_id)
 
     if user
-      send_response("Usuário encontrado: #{user}")
+      render json: {APIresponse: "Usuário encontrado!", name: user.name, email: user.email}
     else
       send_response("Usuário não encontrado!")
     end
@@ -58,7 +61,10 @@ class UsersController < ActionController::API
   end
 
   def destroy
-    user = User.find(params[:id])
+    user_data = JsonWebToken.decode_user_data(params[:token])
+    user_id = user_data[0]["user_data"]
+
+    user = User.find(user_id)
 
     unless user
       send_response("Usuário não encontrado!")

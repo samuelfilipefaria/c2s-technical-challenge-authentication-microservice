@@ -9,4 +9,6 @@ Rails.application.routes.draw do
   root "users#api_message"
   resources :users
   post "/users/login", to: "users#login"
+  post "/users/get_data", to: "users#get_data"
+  post "/users/destroy", to: "users#destroy"
 end

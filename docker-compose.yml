@@ -3,7 +3,7 @@ services:
     image: mysql
     restart: always
     ports:
-      - "4000:4000"
+      - "4000:3306"
     environment:
       - MYSQL_DATABASE=c2s_technical_challenge_users
       - MYSQL_ROOT_PASSWORD=root

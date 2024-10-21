@@ -15,7 +15,7 @@ class UsersController < ActionController::API
     )
 
     if new_user.save
-      send_response("Usuário criado: #{new_user}")
+      send_response("Usuário criado! Agora faça login.")
     else
       send_response("Erro ao criar usuário!")
     end
@@ -50,7 +50,8 @@ class UsersController < ActionController::API
     user = User.where("email = ? AND password = ?", params[:email], params[:password]).first
 
     if user
-      send_response("Usuário encontrado: #{user}")
+      token = JsonWebToken.encode_user_data({ user_data: user.id })
+      render json: {APIresponse: "Usuário logado!", token: token}
     else
       send_response("Usuário não encontrado!")
     end

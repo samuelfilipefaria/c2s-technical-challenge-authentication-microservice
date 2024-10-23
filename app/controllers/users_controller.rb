@@ -15,6 +15,13 @@ class UsersController < ActionController::API
     render json: {APIresponse: message, name: user_name, email: user_email}, status: code
   end
 
+  def get_user_id
+    user_data = JsonWebToken.decode_user_data(params[:token])
+    user_id = user_data[0]["user_data"]
+
+    user_data ? user_id : nil
+  end
+
   def api_message
     send_response("Hello! This is the microservice for AUTHENTICATION", 200)
   end
@@ -34,8 +41,12 @@ class UsersController < ActionController::API
   end
 
   def get_data
-    user_data = JsonWebToken.decode_user_data(params[:token])
-    user_id = user_data[0]["user_data"]
+    user_id = get_user_id
+
+    unless user_id  
+      send_response("User not found!", 404)
+      return
+    end
 
     user = User.find(user_id)
 
@@ -47,8 +58,12 @@ class UsersController < ActionController::API
   end
 
   def valid_token
-    user_data = JsonWebToken.decode_user_data(params[:token])
-    user_id = user_data[0]["user_data"]
+    user_id = get_user_id
+
+    unless user_id  
+      send_response("User not found!", 404)
+      return
+    end
 
     user = User.find(user_id)
 
@@ -60,8 +75,12 @@ class UsersController < ActionController::API
   end
 
   def get_id_by_token
-    user_data = JsonWebToken.decode_user_data(params[:token])
-    user_id = user_data[0]["user_data"]
+    user_id = get_user_id
+
+    unless user_id  
+      send_response("User not found!", 404)
+      return
+    end
 
     user = User.find(user_id)
 
@@ -73,8 +92,12 @@ class UsersController < ActionController::API
   end
 
   def update
-    user_data = JsonWebToken.decode_user_data(params[:token])
-    user_id = user_data[0]["user_data"]
+    user_id = get_user_id
+
+    unless user_id  
+      send_response("User not found!", 404)
+      return
+    end
 
     user = User.find(user_id)
 
@@ -104,8 +127,12 @@ class UsersController < ActionController::API
   end
 
   def destroy
-    user_data = JsonWebToken.decode_user_data(params[:token])
-    user_id = user_data[0]["user_data"]
+    user_id = get_user_id
+
+    unless user_id  
+      send_response("User not found!", 404)
+      return
+    end
 
     user = User.find(user_id)
 

@@ -8,8 +8,8 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   root "users#api_message"
   post "/users/create", to: "users#create"
-  post "/users/get_data", to: "users#get_data"
-  post "/users/edit", to: "users#update"
+  get "/users/get_data", to: "users#get_data"
+  put "/users/edit", to: "users#update"
   post "/users/login", to: "users#login"
-  post "/users/destroy", to: "users#destroy"
+  delete "/users/destroy", to: "users#destroy"
 end

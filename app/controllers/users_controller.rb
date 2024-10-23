@@ -1,10 +1,18 @@
 class UsersController < ActionController::API
-  def send_response(message)
-    render json: {APIresponse: message}
+  def send_response(message, code)
+    render json: {APIresponse: message}, status: code
+  end
+
+  def send_response_with_token(message, code, user_token)
+    render json: {APIresponse: message, token: user_token}, status: code
+  end
+
+  def send_response_with_name_and_email(message, code, user_name, user_email)
+    render json: {APIresponse: message, name: user_name, email: user_email}, status: code
   end
 
   def api_message
-    send_response("Olá! Este é o microserviço para AUTENTICAÇÃO")
+    send_response("Hello! This is the microservice for AUTHENTICATION", 200)
   end
 
   def create
@@ -15,9 +23,9 @@ class UsersController < ActionController::API
     )
 
     if new_user.save
-      send_response("Usuário criado! Agora faça login.")
+      send_response("User created! Now log in.", 201)
     else
-      send_response("Erro ao criar usuário!")
+      send_response("Error creating user!", 500)
     end
   end
 
@@ -28,9 +36,9 @@ class UsersController < ActionController::API
     user = User.find(user_id)
 
     if user
-      render json: {APIresponse: "Usuário encontrado!", name: user.name, email: user.email}
+      send_response_with_name_and_email("User found!", 200, user.name, user.email)
     else
-      send_response("Usuário não encontrado!")
+      send_response("User not found!", 404)
     end
   end
 
@@ -41,7 +49,7 @@ class UsersController < ActionController::API
     user = User.find(user_id)
 
     unless user
-      send_response("Usuário não encontrado!")
+      send_response("User not found!", 404)
       return
     end
 
@@ -50,6 +58,8 @@ class UsersController < ActionController::API
       email: params[:email],
       password: params[:password]
     )
+
+    send_response("User updated!", 200)
   end
 
   def login
@@ -57,9 +67,9 @@ class UsersController < ActionController::API
 
     if user
       token = JsonWebToken.encode_user_data({ user_data: user.id })
-      render json: {APIresponse: "Usuário logado!", token: token}
+      send_response_with_token("User logged in!", 200, user_token: token)
     else
-      send_response("Usuário não encontrado!")
+      send_response("User not found!", 404)
     end
   end
 
@@ -70,10 +80,11 @@ class UsersController < ActionController::API
     user = User.find(user_id)
 
     unless user
-      send_response("Usuário não encontrado!")
+      send_response("User not found!", 404)
       return
     end
 
     user.destroy
+    send_response("User deleted!", 200)
   end
 end

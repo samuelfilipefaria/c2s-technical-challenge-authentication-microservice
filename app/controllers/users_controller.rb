@@ -67,7 +67,7 @@ class UsersController < ActionController::API
 
     if user
       token = JsonWebToken.encode_user_data({ user_data: user.id })
-      send_response_with_token("User logged in!", 200, user_token: token)
+      send_response_with_token("User logged in!", 200, token)
     else
       send_response("User not found!", 404)
     end

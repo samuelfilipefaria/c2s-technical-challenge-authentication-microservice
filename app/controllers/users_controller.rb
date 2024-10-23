@@ -7,6 +7,10 @@ class UsersController < ActionController::API
     render json: {APIresponse: message, token: user_token}, status: code
   end
 
+  def send_response_with_id(message, code, user_id)
+    render json: {APIresponse: message, userId: user_id}, status: code
+  end
+
   def send_response_with_name_and_email(message, code, user_name, user_email)
     render json: {APIresponse: message, name: user_name, email: user_email}, status: code
   end
@@ -39,6 +43,32 @@ class UsersController < ActionController::API
       send_response_with_name_and_email("User found!", 200, user.name, user.email)
     else
       send_response("User not found!", 404)
+    end
+  end
+
+  def valid_token
+    user_data = JsonWebToken.decode_user_data(params[:token])
+    user_id = user_data[0]["user_data"]
+
+    user = User.find(user_id)
+
+    if user
+      send_response("Yes, token is valid!", 200)
+    else
+      send_response("No, token is invalid! User not found!", 404)
+    end
+  end
+
+  def get_id_by_token
+    user_data = JsonWebToken.decode_user_data(params[:token])
+    user_id = user_data[0]["user_data"]
+
+    user = User.find(user_id)
+
+    if user
+      send_response_with_id("Yes, token is valid! User found!", 200, user_id)
+    else
+      send_response("Token is invalid! User not found!", 404)
     end
   end
 

@@ -10,6 +10,17 @@ services:
     networks:
       - c2s-technical-challenge-main-task-system_main-task-system-network
 
+  authentication_microservice_db_test:
+    image: mysql
+    restart: always
+    ports:
+      - "8000:3306"
+    environment:
+      - MYSQL_DATABASE=c2s_technical_challenge_users_test
+      - MYSQL_ROOT_PASSWORD=root
+    networks:
+      - c2s-technical-challenge-main-task-system_main-task-system-network
+
   authentication_microservice_api:
     build:
       context: .
@@ -21,6 +32,7 @@ services:
       - "5000:5000"
     depends_on:
       - authentication_microservice_db
+      - authentication_microservice_db_test
     networks:
       - c2s-technical-challenge-main-task-system_main-task-system-network
 

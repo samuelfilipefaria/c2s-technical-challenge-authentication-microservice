@@ -13,6 +13,13 @@ class JsonWebToken
     end
   end
 
+  def self.get_user_id(token)
+    user_data = JsonWebToken.decode_user_data(token)
+    user_id = user_data[0]["user_data"]
+
+    user_data ? user_id : nil
+  end
+
   def self.encode_user_data(user_data)
     token = JWT.encode user_data, SECRET, "HS256"
     return token

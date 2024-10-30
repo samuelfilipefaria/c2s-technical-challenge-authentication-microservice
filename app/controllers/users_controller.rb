@@ -15,25 +15,14 @@ class UsersController < ActionController::API
     render json: {APIresponse: message, name: user_name, email: user_email}, status: code
   end
 
-  def get_user_id
-    user_data = JsonWebToken.decode_user_data(params[:token])
-    user_id = user_data[0]["user_data"]
-
-    user_data ? user_id : nil
-  end
-
   def api_message
     send_response("Hello! This is the microservice for AUTHENTICATION", 200)
   end
 
   def create
-    new_user = User.new(
-      name: params[:name],
-      email: params[:email],
-      password: params[:password]
-    )
+    service = CreateUserService.new(params[:name], params[:email], params[:password])
 
-    if new_user.save
+    if service.perform
       send_response("User created! Now log in.", 201)
     else
       send_response("Error creating user!", 500)
@@ -41,15 +30,9 @@ class UsersController < ActionController::API
   end
 
   def get_data
-    user_id = get_user_id
-
-    unless user_id  
-      send_response("User not found!", 404)
-      return
-    end
-
-    user = User.find(user_id)
-
+    service = GetUserDataService.new(JsonWebToken.get_user_id(params[:token]))
+    user = service.perform
+    
     if user
       send_response_with_name_and_email("User found!", 200, user.name, user.email)
     else
@@ -57,91 +40,58 @@ class UsersController < ActionController::API
     end
   end
 
-  def valid_token
-    user_id = get_user_id
-
-    unless user_id  
-      send_response("User not found!", 404)
-      return
-    end
-
-    user = User.find(user_id)
-
+  def get_id
+    service = GetUserDataService.new(JsonWebToken.get_user_id(params[:token]))
+    user = service.perform
+    
     if user
-      send_response("Yes, token is valid!", 200)
+      send_response_with_id("User found!", 200, user.id)
     else
-      send_response("No, token is invalid! User not found!", 404)
-    end
-  end
-
-  def get_id_by_token
-    user_id = get_user_id
-
-    unless user_id  
       send_response("User not found!", 404)
-      return
-    end
-
-    user = User.find(user_id)
-
-    if user
-      send_response_with_id("Yes, token is valid! User found!", 200, user_id)
-    else
-      send_response("Token is invalid! User not found!", 404)
     end
   end
 
   def update
-    user_id = get_user_id
-
-    unless user_id  
-      send_response("User not found!", 404)
-      return
-    end
-
-    user = User.find(user_id)
-
-    unless user
-      send_response("User not found!", 404)
-      return
-    end
-
-    user.update(
-      name: params[:name],
-      email: params[:email],
-      password: params[:password]
+    service = UpdateUserService.new(
+      JsonWebToken.get_user_id(params[:token]),
+      params[:name],
+      params[:email],
+      params[:password]
     )
 
-    send_response("User updated!", 200)
-  end
-
-  def login
-    user = User.where("email = ? AND password = ?", params[:email], params[:password]).first
-
-    if user
-      token = JsonWebToken.encode_user_data({ user_data: user.id })
-      send_response_with_token("User logged in!", 200, token)
+    if service.perform
+      send_response("User updated!", 200)
     else
-      send_response("User not found!", 404)
-    end
+      send_response("Error updating user!", 500)
+    end    
   end
 
   def destroy
-    user_id = get_user_id
+    service = DeleteUserService.new(
+      JsonWebToken.get_user_id(params[:token])
+    )
 
-    unless user_id  
+    user_token = service.perform
+
+    if service.perform
+      send_response("User deleted!", 200)
+    else
+      send_response("Error deleting user!", 500)
+    end  
+  end
+
+  def login
+    service = LoginUserService.new(
+      params[:email],
+      params[:password]
+    )
+
+    user_token = service.perform
+
+    if user_token
+      send_response_with_token("User logged in!", 200, user_token)
+    else
       send_response("User not found!", 404)
-      return
-    end
-
-    user = User.find(user_id)
-
-    unless user
-      send_response("User not found!", 404)
-      return
-    end
-
-    user.destroy
-    send_response("User deleted!", 200)
+    end  
   end
 end

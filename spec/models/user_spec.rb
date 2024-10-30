@@ -9,22 +9,51 @@ RSpec.describe User, :type => :model do
     )
   }
 
-  it "is valid with valid attributes" do
-    expect(subject).to be_valid
+  context "all valid parameters" do
+    it "is a valid user" do
+      expect(subject).to be_valid
+    end
   end
 
-  it "is not valid without a name" do
-    subject.name = nil
-    expect(subject).to_not be_valid
+  context "null name" do
+    it "is not a valid user" do
+      subject.name = nil
+      expect(subject).to_not be_valid
+    end
   end
 
-  it "is not valid without a e-mail" do
-    subject.email = nil
-    expect(subject).to_not be_valid
+  context "empty name" do
+    it "is not a valid user" do
+      subject.name = ""
+      expect(subject).to_not be_valid
+    end
   end
 
-  it "is not valid without a password" do
-    subject.password = nil
-    expect(subject).to_not be_valid
+  context "null email" do
+    it "is not a valid user" do
+      subject.email = nil
+      expect(subject).to_not be_valid
+    end
+  end
+
+  context "empty email" do
+    it "is not a valid user" do
+      subject.email = ""
+      expect(subject).to_not be_valid
+    end
+  end
+
+  context "null password" do
+    it "is not a valid user" do
+      subject.password = nil
+      expect(subject).to_not be_valid
+    end
+  end
+
+  context "empty password" do
+    it "is not a valid user" do
+      subject.password = ""
+      expect(subject).to_not be_valid
+    end
   end
 end

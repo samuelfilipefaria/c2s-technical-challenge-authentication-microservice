@@ -1,20 +1,37 @@
 #  Microserviço de autenticação de usuários
 
-Para rodar esta aplicação é necessário ter a tecnologia Docker devidamente instalada em sua máquina. Recomendo instalar a ferramenta Docker Desktop para poder ter uma melhor visualização do que está rodando.
+# Como executar o projeto
 
-Este container inclui uma API (microserviço) e um banco de dados MySQL, para criar a imagem a partir do código, construir o container e iniciar o mesmo basta utilizar o seguinte comando no diretório onde o repositório foi clonado:
+## Requisitos para rodar
+
+- Docker Engine devidamente instalado
+- Docker Compose devidamente instalado
+- Portas `4000`, `8000`, `5000` da máquina disponíveis
+
+> Sugestão: utilizar [Docker Desktop](https://www.docker.com/products/docker-desktop/), pois traz os requisitos acima além de uma interface gráfica que simplifica o gerenciamento de múltiplos containers.
+
+## Como rodar a primeira vez
+
+Navegue até o diretório onde se encontra o código adquirido através deste repositório e execute o seguinte comando:
 
 ```
 docker compose up
 ```
 
-Após isso o banco de dados estará rodando na porta 4000 (db: "c2s_technical_challenge_users", user: "root", password: "root") e o microserviço na porta 5000.
+Este comando irá criar a imagem baseado no código fonte e com essa imagem irá criar e iniciar o container docker. Além disso também criará o banco de dados (incluindo o de testes).
+
+Da próxima vez que for rodar basta iniciar o container, não precisará o construir (a menos que tenha acontecido alguma mudança em relação as dependências no projeto, mas isto é apenas para fins de desenvolvimento).
+
+# Documentação da API
 
 ## Documentação da API
 
-- `get "/"` - retorna mensagem padrão da API
-- `post "/users/create"` - criar usuário (deve incluir os parâmetros nome, email e senha)
-- `post "/users/get_data"` - retornar dados do usuário (deve incluir o parâmetro token)
-- `post "/users/edit"` - editar usuário (deve incluir os parâmetros nome, email e senha)
-- `post "/users/login"` - logar com um usuário (deve incluir os parâmetros email e senha)
-- `post "/users/destroy"` - apagar dados do usuário (deve incluir o parâmetro token)
+| Verb   	| Route                 	| Parameters                	|
+|--------	|-----------------------	|---------------------------	|
+| post   	| /users/create         	| name,email,password       	|
+| get    	| /users/get_data       	| token                     	|
+| get    	| /users/get_data_by_id 	| token,user_id             	|
+| put    	| /users/edit           	| token,name,email,password 	|
+| delete 	| /users/destroy        	| token                     	|
+| post   	| /users/login          	| email,password            	|
+| get    	| /users/get_user_id    	| token                     	|

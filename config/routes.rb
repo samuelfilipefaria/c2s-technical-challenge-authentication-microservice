@@ -9,6 +9,7 @@ Rails.application.routes.draw do
   root "users#api_message"
   post "/users/create", to: "users#create"
   get "/users/get_data", to: "users#get_data"
+  get "/users/get_data_by_id", to: "users#get_data_by_id"
   put "/users/edit", to: "users#update"
   delete "/users/destroy", to: "users#destroy"
   post "/users/login", to: "users#login"

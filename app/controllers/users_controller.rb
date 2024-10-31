@@ -19,6 +19,18 @@ class UsersController < ActionController::API
     send_response("Hello! This is the microservice for AUTHENTICATION", 200)
   end
 
+  def is_given_token_valid(given_token)
+    user_id = JsonWebToken.get_user_id(given_token)
+    user = User.find(user_id)
+
+    return true if user
+    false
+  end
+
+  def authorize_user
+    send_response("Token is invalid! User not found!", 404) unless is_given_token_valid(params[:token])
+  end
+
   def create
     service = CreateUserService.new(params[:name], params[:email], params[:password])
 
@@ -31,6 +43,19 @@ class UsersController < ActionController::API
 
   def get_data
     service = GetUserDataService.new(JsonWebToken.get_user_id(params[:token]))
+    user = service.perform
+    
+    if user
+      send_response_with_name_and_email("User found!", 200, user.name, user.email)
+    else
+      send_response("User not found!", 404)
+    end
+  end
+
+  def get_data_by_id
+    authorize_user
+    
+    service = GetUserDataService.new(params[:user_id])
     user = service.perform
     
     if user

@@ -45,3 +45,5 @@ end
 
 
 gem "rspec-rails", "~> 7.0"
+
+gem "httparty", "~> 0.22.0"
